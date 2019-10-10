@@ -257,6 +257,8 @@ public class ElasticsearchController {
 
 		List listStr = JsonUtils.toList(dataStr);
 
+		System.out.println(listStr);
+		System.out.println(listStr);
 		List<Tests> list = new ArrayList<>();
 
 		//遍历集合中的字符串，将它转换成对象并放到新的集合中
