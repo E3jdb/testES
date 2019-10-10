@@ -1,19 +1,14 @@
 package com.spring_es.demo.controller;
 
-import com.siyue.common.enums.Status;
 import com.siyue.common.result.CommonResult;
 import com.siyue.common.utils.JsonUtils;
-import com.spring_es.demo.pojo.Tests;
-import com.spring_es.demo.service.ElasticsearchService;
+import com.spring_es.demo.pojo.User;
+import com.spring_es.demo.service.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,40 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/ES/")
-public class ElasticsearchController {
-
+@RequestMapping("/user/")
+public class UserController {
 
 	@Autowired
-	private ElasticsearchService elasticsearchServiceImpl;
+	private UserService userService;
 
-
-	@ApiOperation(value = "创建索引", notes = "创建索引")
-	@RequestMapping(value = "createIndex", method = RequestMethod.POST)
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引"),
-	})
-	public String createIndex(String index){
-
-		try {
-
-			//判断索引是否存在
-			boolean isF = elasticsearchServiceImpl.existsIndex(index);
-			if (!isF) {
-				elasticsearchServiceImpl.createIndex(index);
-
-				return "索引创建成功！！";
-			} else {
-				return "索引创建失败！该索引已存在";
-			}
-
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return "索引创建失败";
-	}
 
 	@ApiOperation(value = "根据id查询", notes = "根据id查询")
 	@RequestMapping(value = "get", method = RequestMethod.GET)
@@ -76,15 +43,15 @@ public class ElasticsearchController {
 				return "请输入查询id";
 			}
 
-			Tests t = new Tests();
+			User t = new User();
 			t.setId(Long.valueOf(id));
 
 			//获取的时候先判断记录是否存在，如果存在就返回
-			boolean isF = elasticsearchServiceImpl.exists(index, type, t);
+			boolean isF = userService.exists(index, type, t);
 			if (isF) {
-				Tests tests = elasticsearchServiceImpl.get(index, type, t.getId());
+				User User = userService.get(index, type, t.getId());
 
-				return tests.toString();
+				return User.toString();
 			} else {
 				return "记录不存在！！";
 			}
@@ -104,14 +71,14 @@ public class ElasticsearchController {
 			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
 			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
 	})
-	public String save(@RequestParam String index, @RequestParam String type, Tests t){
+	public String save(@RequestParam String index, @RequestParam String type, User t){
 
 		try {
 
 			//添加的时候先判断记录是否存在，如果不存在就添加
-			boolean isF = elasticsearchServiceImpl.exists(index, type, t);
+			boolean isF = userService.exists(index, type, t);
 			if (!isF) {
-				elasticsearchServiceImpl.add(index, type, t);
+				userService.add(index, type, t);
 
 				return "添加记录成功！！";
 			} else {
@@ -133,14 +100,14 @@ public class ElasticsearchController {
 			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
 			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
 	})
-	public String updata(@RequestParam String index, @RequestParam String type, Tests t){
+	public String updata(@RequestParam String index, @RequestParam String type, User t){
 
 		try {
 
 			//修改的时候先判断记录是否存在，如果存在就修改
-			boolean isF = elasticsearchServiceImpl.exists(index, type, t);
+			boolean isF = userService.exists(index, type, t);
 			if (isF) {
-				elasticsearchServiceImpl.update(index, type, t);
+				userService.update(index, type, t);
 
 				return "修改记录成功！！";
 			} else {
@@ -169,13 +136,13 @@ public class ElasticsearchController {
 				return "请输入完整的信息！！";
 			}
 
-			Tests t = new Tests();
+			User t = new User();
 			t.setId(Long.valueOf(id));
 
 			//删除的时候先判断记录是否存在，如果存在就删除
-			boolean isF = elasticsearchServiceImpl.exists(index, type, t);
+			boolean isF = userService.exists(index, type, t);
 			if (isF) {
-				elasticsearchServiceImpl.delete(index, type, t.getId());
+				userService.delete(index, type, t.getId());
 
 				return "删除记录成功！！";
 			} else {
@@ -200,10 +167,10 @@ public class ElasticsearchController {
 			@ApiImplicitParam(name = "begin", value = "第几页", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", value = "每页显示数据量", defaultValue = "10"),
 	})
-	public CommonResult findAll(@RequestParam String index, @RequestParam String type,Integer begin, Integer size){
+	public CommonResult findAll(@RequestParam String index, @RequestParam String type, Integer begin, Integer size){
 
 
-		List<Tests> list = elasticsearchServiceImpl.find(index, type, begin, size,new SearchSourceBuilder());
+		List<User> list = userService.find(index, type, begin, size,new SearchSourceBuilder());
 
 		Map<String, Object> map = new HashMap<String, Object>();
 
@@ -235,9 +202,9 @@ public class ElasticsearchController {
 
 		Map<String, Object> map = null;
 
-		List<Tests> list = null;
+		List<User> list = null;
 		try {
-			list = elasticsearchServiceImpl.search(index, type, begin, size, name);
+			list = userService.search(index, type, begin, size, name);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -263,17 +230,17 @@ public class ElasticsearchController {
 
 		List listStr = JsonUtils.toList(dataStr);
 
-		List<Tests> list = new ArrayList<>();
+		List<User> list = new ArrayList<>();
 
 		//遍历集合中的字符串，将它转换成对象并放到新的集合中
 		for (int i = 0; i < listStr.size(); i++) {
 			String t = listStr.get(i).toString();
-			list.add(JsonUtils.toObject(t, Tests.class));
+			list.add(JsonUtils.toObject(t, User.class));
 		}
 
 		try {
 
-			elasticsearchServiceImpl.bulkAdd(index, type, list);
+			userService.bulkAdd(index, type, list);
 
 			return "批量添加/更新成功！！";
 		} catch (IOException e) {
@@ -295,17 +262,17 @@ public class ElasticsearchController {
 
 		List listStr = JsonUtils.toList(dataStr);
 
-		List<Tests> list = new ArrayList<>();
+		List<User> list = new ArrayList<>();
 
 		//遍历集合中的字符串，将它转换成对象并放到新的集合中
 		for (int i = 0; i < listStr.size(); i++) {
 			String t = listStr.get(i).toString();
-			list.add(JsonUtils.toObject(t, Tests.class));
+			list.add(JsonUtils.toObject(t, User.class));
 		}
 
 		try {
 
-			elasticsearchServiceImpl.bulkDelete(index, type, list);
+			userService.bulkDelete(index, type, list);
 
 			return "批量删除成功！！";
 		} catch (IOException e) {
@@ -330,7 +297,7 @@ public class ElasticsearchController {
 
 		Map<String, Object> map = null;
 
-		List<Tests> list = elasticsearchServiceImpl.findByIdRange(index, type, begin, size, start, end);
+		List<User> list = userService.findByIdRange(index, type, begin, size, start, end);
 
 
 		map = new HashMap<String, Object>();
@@ -342,16 +309,4 @@ public class ElasticsearchController {
 
 	}
 
-	@RequestMapping("test")
-	public void test(String str){
-
-		System.out.println(str);
-
-	}
-
 }
-
-
-
-
-

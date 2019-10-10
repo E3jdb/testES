@@ -2,8 +2,9 @@ package com.spring_es.demo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.siyue.common.utils.JsonUtils;
-import com.spring_es.demo.pojo.Tests;
+import com.spring_es.demo.pojo.User;
 import com.spring_es.demo.service.ElasticsearchService;
+import com.spring_es.demo.service.UserService;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
@@ -21,70 +22,38 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
-import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 @Service
-public class ElasticsearchServiceImpl implements ElasticsearchService {
+public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private RestHighLevelClient client;
-
-
-	/**
-	 * 创建索引
-	 *
-	 * @param index
-	 * @throws IOException
-	 */
-	public void createIndex(String index) throws IOException {
-		CreateIndexRequest request = new CreateIndexRequest(index);
-		CreateIndexResponse createIndexResponse = client.indices().create(request, RequestOptions.DEFAULT);
-		System.out.println("createIndex: " + JSON.toJSONString(createIndexResponse));
-	}
-
-	/**
-	 * 判断索引是否存在
-	 *
-	 * @param index
-	 * @return
-	 * @throws IOException
-	 */
-	public boolean existsIndex(String index) throws IOException {
-		GetIndexRequest request = new GetIndexRequest();
-		request.indices(index);
-		boolean exists = client.indices().exists(request, RequestOptions.DEFAULT);
-		System.out.println("existsIndex: " + exists);
-		return exists;
-	}
 
 	/**
 	 * 增加记录
 	 *
 	 * @param index
 	 * @param type
-	 * @param tests
+	 * @param User
 	 * @throws IOException
 	 */
-	public void add(String index, String type, Tests tests) throws IOException {
-		IndexRequest indexRequest = new IndexRequest(index, type, tests.getId().toString());
-		indexRequest.source(JSON.toJSONString(tests), XContentType.JSON);
+	public void add(String index, String type, User User) throws IOException {
+		IndexRequest indexRequest = new IndexRequest(index, type, User.getId().toString());
+		indexRequest.source(JSON.toJSONString(User), XContentType.JSON);
 		IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
 		System.out.println("add: " + JSON.toJSONString(indexResponse));
 	}
@@ -94,12 +63,12 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 	 *
 	 * @param index
 	 * @param type
-	 * @param tests
+	 * @param User
 	 * @return
 	 * @throws IOException
 	 */
-	public boolean exists(String index, String type, Tests tests) throws IOException {
-		GetRequest getRequest = new GetRequest(index, type, tests.getId().toString());
+	public boolean exists(String index, String type, User User) throws IOException {
+		GetRequest getRequest = new GetRequest(index, type, User.getId().toString());
 		getRequest.fetchSourceContext(new FetchSourceContext(false));
 		getRequest.storedFields("_none_");
 		boolean exists = client.exists(getRequest, RequestOptions.DEFAULT);
@@ -115,11 +84,11 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 	 * @param id
 	 * @throws IOException
 	 */
-	public Tests get(String index, String type, Long id) throws IOException {
+	public User get(String index, String type, Long id) throws IOException {
 		GetRequest getRequest = new GetRequest(index, type, id.toString());
 		GetResponse getResponse = client.get(getRequest, RequestOptions.DEFAULT);
 
-		return JsonUtils.toObject(JSON.toJSONString(getResponse.getSource()),Tests.class);
+		return JsonUtils.toObject(JSON.toJSONString(getResponse.getSource()),User.class);
 	}
 
 	/**
@@ -127,13 +96,13 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 	 *
 	 * @param index
 	 * @param type
-	 * @param tests
+	 * @param User
 	 * @throws IOException
 	 */
-	public void update(String index, String type, Tests tests) throws IOException {
-		tests.setName(tests.getName() + "updated");
-		UpdateRequest request = new UpdateRequest(index, type, tests.getId().toString());
-		request.doc(JSON.toJSONString(tests), XContentType.JSON);
+	public void update(String index, String type, User User) throws IOException {
+		User.setName(User.getName() + "updated");
+		UpdateRequest request = new UpdateRequest(index, type, User.getId().toString());
+		request.doc(JSON.toJSONString(User), XContentType.JSON);
 		UpdateResponse updateResponse = client.update(request, RequestOptions.DEFAULT);
 		System.out.println("update: " + JSON.toJSONString(updateResponse));
 	}
@@ -160,9 +129,9 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 	 * @param name
 	 * @throws IOException
 	 */
-	public List<Tests> search(String index, String type, Integer begin, Integer size, String name) throws IOException {
+	public List<User> search(String index, String type, Integer begin, Integer size, String name) throws IOException {
 
-		List<Tests> list = new ArrayList<>();
+		List<User> list = new ArrayList<>();
 		BoolQueryBuilder boolBuilder = QueryBuilders.boolQuery();
 
 		// 这里可以根据字段进行搜索，must表示符合条件的，相反的mustnot表示不符合条件的
@@ -199,16 +168,16 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 	 *
 	 * @throws IOException
 	 */
-	public void bulkAdd(String index, String type, List<Tests> list) throws IOException {
+	public void bulkAdd(String index, String type, List<User> list) throws IOException {
 
-		Tests tests = null;
+		User User = null;
 
 		// 批量增加
 		BulkRequest bulkAddRequest = new BulkRequest();
 		for (int i = 0; i < list.size(); i++) {
-			tests = list.get(i);
-			IndexRequest indexRequest = new IndexRequest(index, type, tests.getId().toString());
-			indexRequest.source(JSON.toJSONString(tests), XContentType.JSON);
+			User = list.get(i);
+			IndexRequest indexRequest = new IndexRequest(index, type, User.getId().toString());
+			indexRequest.source(JSON.toJSONString(User), XContentType.JSON);
 			bulkAddRequest.add(indexRequest);
 		}
 		BulkResponse bulkAddResponse = client.bulk(bulkAddRequest, RequestOptions.DEFAULT);
@@ -217,10 +186,10 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 		// 批量更新
 		/*BulkRequest bulkUpdateRequest = new BulkRequest();
 		for (int i = 0; i < list.size(); i++) {
-			tests = list.get(i);
-			tests.setName(tests.getName() + " updated");
-			UpdateRequest updateRequest = new UpdateRequest(index, type, tests.getId().toString());
-			updateRequest.doc(JSON.toJSONString(tests), XContentType.JSON);
+			User = list.get(i);
+			User.setName(User.getName() + " updated");
+			UpdateRequest updateRequest = new UpdateRequest(index, type, User.getId().toString());
+			updateRequest.doc(JSON.toJSONString(User), XContentType.JSON);
 			bulkUpdateRequest.add(updateRequest);
 		}
 		BulkResponse bulkUpdateResponse = client.bulk(bulkUpdateRequest, RequestOptions.DEFAULT);
@@ -236,15 +205,15 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 	 * @param list
 	 * @throws IOException
 	 */
-	public void bulkDelete(String index, String type, List<Tests> list) throws IOException {
+	public void bulkDelete(String index, String type, List<User> list) throws IOException {
 
-		Tests tests = null;
+		User User = null;
 
 		// 批量删除
 		BulkRequest bulkDeleteRequest = new BulkRequest();
 		for (int i = 0; i < list.size(); i++) {
-			tests = list.get(i);
-			DeleteRequest deleteRequest = new DeleteRequest(index, type, tests.getId().toString());
+			User = list.get(i);
+			DeleteRequest deleteRequest = new DeleteRequest(index, type, User.getId().toString());
 			bulkDeleteRequest.add(deleteRequest);
 		}
 		BulkResponse bulkDeleteResponse = client.bulk(bulkDeleteRequest, RequestOptions.DEFAULT);
@@ -254,9 +223,9 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 
 
 	@Override
-	public List<Tests> find(String index, String type, Integer begin, Integer size, SearchSourceBuilder sourceBuilder) {
+	public List<User> find(String index, String type, Integer begin, Integer size, SearchSourceBuilder sourceBuilder) {
 
-		List<Tests> list = new ArrayList<>();
+		List<User> list = new ArrayList<>();
 
 		BoolQueryBuilder boolBuilder = QueryBuilders.boolQuery();
 
@@ -307,9 +276,9 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 	 * @param end	结束位置
 	 * @return
 	 */
-	public List<Tests> findByIdRange(String index, String type,Integer begin, Integer size, String start, String end) {
+	public List<User> findByIdRange(String index, String type,Integer begin, Integer size, String start, String end) {
 
-		List<Tests> list = new ArrayList<>();
+		List<User> list = new ArrayList<>();
 
 		RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("id");
 		rangeQueryBuilder.gte(start);
@@ -365,7 +334,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 		return -1;
 	}
 
-	public List<Tests> byPage(Integer begin, Integer size,SearchHits hits){
+	public List<User> byPage(Integer begin, Integer size,SearchHits hits){
 
 
 		//记录数量
@@ -379,20 +348,20 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
 		begin = (begin - 1) * size;
 
 
-		List<Tests> list = new ArrayList<>(),newList = new ArrayList<>();
+		List<User> list = new ArrayList<>(),newList = new ArrayList<>();
 
 
 		//此行等同于下面的注释内容
-		hits.forEach(hit -> list.add(JsonUtils.toObject(hit.getSourceAsString(),Tests.class)));
+		hits.forEach(hit -> list.add(JsonUtils.toObject(hit.getSourceAsString(),User.class)));
 
 		/*SearchHit[] searchHits = hits.getHits();
 
-		Tests t = new Tests();
+		User t = new User();
 
 		for (SearchHit hit : searchHits) {
 			System.out.println(hit.getSourceAsString());
 			//转换成具体类型并放到集合中
-			t = JsonUtils.toObject(hit.getSourceAsString(),Tests.class);
+			t = JsonUtils.toObject(hit.getSourceAsString(),User.class);
 			list.add(t);
 		}*/
 

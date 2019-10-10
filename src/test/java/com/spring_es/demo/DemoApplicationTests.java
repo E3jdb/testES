@@ -44,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 @SpringBootTest
 public class DemoApplicationTests {
 
+
+
 	@Autowired
 	private RestHighLevelClient client;
 
@@ -69,6 +71,11 @@ public class DemoApplicationTests {
 	@Autowired
 	private  ElasticsearchController elasticsearchController;
 
+	@Autowired
+	private  Tests t;
+
+	@Autowired
+	private  Tests t1;
 
 	@Test
 	public void contextLoads() {
@@ -79,7 +86,11 @@ public class DemoApplicationTests {
 		t.setName("asdfgsdfsfd");
 		elasticsearchController.save(INDEX_TEST, TYPE_TEST, t);*/
 
-		elasticsearchController.findAll(INDEX_TEST,TYPE_TEST, 1, 10);
+		//elasticsearchController.findAll(INDEX_TEST,TYPE_TEST, 1, 10);
+
+
+		System.out.println(t);
+		System.out.println(t1);
 
 	}
 
