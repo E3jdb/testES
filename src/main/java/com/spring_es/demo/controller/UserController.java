@@ -31,8 +31,8 @@ public class UserController {
 	@ApiOperation(value = "根据id查询", notes = "根据id查询")
 	@RequestMapping(value = "get", method = RequestMethod.GET)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 			@ApiImplicitParam(name = "id", value = "id")
 	})
 	public String get(@RequestParam String index, @RequestParam String type, String id){
@@ -68,8 +68,8 @@ public class UserController {
 	@ApiOperation(value = "添加记录", notes = "添加记录")
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 	})
 	public String save(@RequestParam String index, @RequestParam String type, User t){
 
@@ -97,8 +97,8 @@ public class UserController {
 	@ApiOperation(value = "修改记录", notes = "修改记录")
 	@RequestMapping(value = "update", method = RequestMethod.PUT)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 	})
 	public String updata(@RequestParam String index, @RequestParam String type, User t){
 
@@ -126,8 +126,8 @@ public class UserController {
 	@ApiOperation(value = "根据id删除记录", notes = "根据id删除记录")
 	@RequestMapping(value = "delete", method = RequestMethod.DELETE)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 	})
 	public String delete(@RequestParam String index, @RequestParam String type, String id){
 
@@ -162,8 +162,8 @@ public class UserController {
 	@ApiOperation(value = "查询全部", notes = "查询全部")
 	@RequestMapping(value = "findAll", method = RequestMethod.GET)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 			@ApiImplicitParam(name = "begin", value = "第几页", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", value = "每页显示数据量", defaultValue = "10"),
 	})
@@ -185,8 +185,8 @@ public class UserController {
 	@ApiOperation(value = "根据名称查询", notes = "根据名称查询")
 	@RequestMapping(value = "findByName", method = RequestMethod.GET)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 			@ApiImplicitParam(name = "begin", value = "第几页", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", value = "每页显示数据量", defaultValue = "10"),
 			@ApiImplicitParam(name = "name", value = "名称"),
@@ -222,8 +222,8 @@ public class UserController {
 	@ApiOperation(value = "批量添加/更新", notes = "批量添加/更新")
 	@RequestMapping(value = "bulkAdd", method = RequestMethod.POST)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 			@ApiImplicitParam(name = "dataStr", value = "list类型的数据"),
 	})
 	public String bulkAdd(@RequestParam String index, @RequestParam String type, String dataStr){
@@ -254,8 +254,8 @@ public class UserController {
 	@ApiOperation(value = "批量删除", notes = "批量删除/更新")
 	@RequestMapping(value = "bulkDelete", method = RequestMethod.DELETE)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 			@ApiImplicitParam(name = "dataStr", value = "list类型的数据"),
 	})
 	public String bulkDelete(@RequestParam String index, @RequestParam String type, String dataStr){
@@ -286,8 +286,8 @@ public class UserController {
 	@ApiOperation(value = "根据id进行范围查找", notes = "根据id进行范围查找")
 	@RequestMapping(value = "findByIdRange", method = RequestMethod.GET)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "index_test"),
-			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "_doc"),
+			@ApiImplicitParam(name = "index", value = "索引", defaultValue = "user_info"),
+			@ApiImplicitParam(name = "type", value = "文档", defaultValue = "user"),
 			@ApiImplicitParam(name = "begin", value = "第几页", defaultValue = "1"),
 			@ApiImplicitParam(name = "size", value = "每页显示数据量", defaultValue = "10"),
 			@ApiImplicitParam(name = "start", value = "开始位置", defaultValue = "0"),
